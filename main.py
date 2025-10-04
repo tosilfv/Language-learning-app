@@ -4,63 +4,117 @@
 #                                                 #
 ###################################################
 
-from tkinter import Tk, Canvas, Label, Button, Entry, CENTER
+import os
+from tkinter import Tk, ttk, PhotoImage, N, NE, E, SE, S, SW, W, NW
 
-window = Tk()
-window.title("Language Learning App")
-window.config(padx=40, pady=40, bg="white")
+decider = ["Answer.TLabel", "Solution.TLabel"]
+en_fi = {
+    "I": "minä",
+    "you": "sinä"
+}
+en_fi_keys = list(en_fi.keys())
 
-# Canvas
-canvas = Canvas(width=200, height=200, bg="white")
+root = Tk()
+root.title("Language Learning App")
 
-# Word
-word = Label(text="PUT_WORD_HERE", bg="white")
-word.place(relx=0.5, rely=0.5, anchor=CENTER)
+style = ttk.Style()
+style.configure(
+    "Mainframe.TFrame",
+    background="#1B4DD6")
+style.configure(
+    "Word.TLabel",
+    font=("Arial", 24, "bold"),
+    foreground="white",
+    background="#1B4DD6")
+style.configure(
+    "Solution.TLabel",
+    font=("Arial", 16, "bold"),
+    foreground="#00FF00",
+    background="#1B4DD6")
+style.configure(
+    "Answer.TLabel",
+    font=("Arial", 16, "bold"),
+    background="#1B4DD6")
 
-# Translation
-translation = Label(text="PUT_TRANSLATION_HERE", bg="white")
-translation.place(relx=0.5, rely=0.5, anchor=CENTER)
-
-# Open file
-open_file = Button(text="Open File", bg="white", highlightthickness=0)
-open_file.place(relx=0.5, rely=0.5, anchor=CENTER)
-
-# Previous word
-previous_word = Button(text="Previous Word", bg="white", highlightthickness=0)
-previous_word.place(relx=0.5, rely=0.5, anchor=CENTER)
-
-# Next word
-next_word = Button(text="Next Word", bg="white", highlightthickness=0)
-next_word.place(relx=0.5, rely=0.5, anchor=CENTER)
-
-# Sort by a to z
-sort_by_atoz = Button(text="Sort by A to Z", bg="white", highlightthickness=0)
-sort_by_atoz.place(relx=0.5, rely=0.5, anchor=CENTER)
-
-# Sort by z to a
-sort_by_ztoa = Button(text="Sort by Z to A", bg="white", highlightthickness=0)
-sort_by_ztoa.place(relx=0.5, rely=0.5, anchor=CENTER)
-
-# Show/hide translation
-show_hide_trans = Button(
-        text="Show/Hide\nTranslation", bg="white", highlightthickness=0
+app_img = PhotoImage(
+    file=os.path.join(
+        os.path.dirname(
+            os.path.abspath(__file__)), 'images', 'll_app.ico')
     )
-show_hide_trans.place(relx=0.5, rely=0.5, anchor=CENTER)
+open_img = PhotoImage(
+    file=os.path.join(
+        os.path.dirname(
+            os.path.abspath(__file__)), 'images', 'open.png')
+    )
+play_img = PhotoImage(
+    file=os.path.join(
+        os.path.dirname(
+            os.path.abspath(__file__)), 'images', 'play.png')
+    )
+rand_img = PhotoImage(
+    file=os.path.join(
+        os.path.dirname(
+            os.path.abspath(__file__)), 'images', 'rand.png')
+    )
+stop_img = PhotoImage(
+    file=os.path.join(
+        os.path.dirname(
+            os.path.abspath(__file__)), 'images', 'stop.png')
+    )
 
-# Sort by mixed
-sort_by_mixed = Button(text="Sort by Mixed", bg="white", highlightthickness=0)
-sort_by_mixed.place(relx=0.5, rely=0.5, anchor=CENTER)
+root.iconphoto(False, app_img)
+mainframe = ttk.Frame(
+    root,
+    padding=(0),
+    style="Mainframe.TFrame")
+mainframe.grid(
+    column=0,
+    row=0,
+    sticky=(NE, SE, SW, NW))
 
-# User input label
-user_input_label = Label(text="Translation", bg="white")
-user_input_label.place(relx=0.5, rely=0.5, anchor=CENTER)
+open = ttk.Button(
+    mainframe,
+    image=open_img,
+    padding=(50, 100)
+    ).grid(column=0, row=0, sticky=NW)
+play = ttk.Button(
+    mainframe,
+    image=play_img,
+    padding=(50, 50)
+    ).grid(column=2, row=1, sticky=SE)
+rand = ttk.Button(
+    mainframe,
+    image=rand_img,
+    padding=(50, 100)
+    ).grid(column=2, row=0, sticky=NE)
+stop = ttk.Button(
+    mainframe,
+    image=stop_img,
+    padding=(50, 50)
+    ).grid(column=0, row=1, sticky=SW)
 
-# User input
-user_input = Entry(width=30)
-user_input.place(relx=0.5, rely=0.5, anchor=CENTER)
+word = ttk.Label(
+        mainframe,
+        text=en_fi_keys[1],
+        style="Word.TLabel",
+        padding=(100, 20)
+        ).grid(column=1, row=0, sticky=N)
+solution = ttk.Label(
+        mainframe,
+        text="",#"Solution",
+        style="Solution.TLabel",
+        padding=(170, 30)
+        ).grid(column=1, row=0, sticky=(E, W))
+answer = ttk.Label(
+        mainframe,
+        text="",#"Answer",
+        style=decider[0],
+        padding=(80, 20)
+        ).grid(column=1, row=0, sticky=(S))
+translation = ttk.Entry(
+        mainframe,
+        font=("Arial", 24, "bold"),
+        justify="center"
+        ).grid(column=1, row=1, sticky=(E, W))
 
-# Check input
-check_input = Button(text="Ok", bg="white", highlightthickness=0)
-check_input.place(relx=0.5, rely=0.5, anchor=CENTER)
-
-window.mainloop()
+root.mainloop()
