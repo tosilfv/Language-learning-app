@@ -1,0 +1,8 @@
+{
+    "hello": "hei",
+    "world": "maailma",
+    "how": "kuinka",
+    "is": "on",
+    "it": "se",
+    "going": "menee"
+}

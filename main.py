@@ -5,26 +5,44 @@
 ###################################################
 
 import os
+import json
 import tkinter as tk
 from random import choice
-from tkinter import Tk, ttk, PhotoImage, N, NE, E, SE, S, SW, W, NW
-from files.en_fi import data
+from tkinter import Tk, ttk, PhotoImage, N, NE, E, SE, S, SW, W, NW, filedialog
 
 decider = ["UserInput.TLabel", "Solution.TLabel"]
-data_keys = list(data.keys())
-learn_word = choice(data_keys)
-data_key_index = data_keys.index(learn_word)
+data_lang = None
+data_keys = list(data_lang.keys()) if data_lang is not None else None
+learn_word = choice(data_keys) if data_lang is not None else None
+data_key_index = data_keys.index(learn_word) if data_lang is not None else None
 play_counter = 0
+stop_here = False
 
 def next_data_key():
-    global play_counter, learn_word, data_key_index
+    global play_counter, learn_word, data_keys, data_key_index, stop_here
+    if stop_here:
+        solution.config(text=data_lang[word.cget("text")])
+        attempt.config(text=user_input.get())
+        stop_here = False
+        stop_btn.config(style="White.TButton")
+        user_input.delete(0, tk.END)
+        play_counter = 1
+        data_key_index = data_keys.index(learn_word)
+        if data_key_index + 1 == len(data_keys):
+            data_key_index = 0
+        else:
+            data_key_index += 1
+            learn_word = data_keys[data_key_index]
+        user_input.delete(0, tk.END)
+        user_input.focus()
+        return
     if play_counter == 1:
         word.config(text=learn_word)
         solution.config(text="")
-        attempt.config(text=user_input.get())
+        attempt.config(text="")
         play_counter = 0
     else:
-        solution.config(text=data[learn_word])
+        solution.config(text=data_lang[learn_word])
         attempt.config(text=user_input.get())
         play_counter += 1
         data_key_index = data_keys.index(learn_word)
@@ -34,16 +52,65 @@ def next_data_key():
             data_key_index += 1
     learn_word = data_keys[data_key_index]
     user_input.delete(0, tk.END)
+    user_input.focus()
 
 def rand_data_key():
-    global play_counter, learn_word, data_key_index
+    global play_counter, learn_word, data_keys, data_key_index, stop_here
+    if stop_here:
+        solution.config(text=data_lang[word.cget("text")])
+        attempt.config(text=user_input.get())
+        stop_here = False
+        stop_btn.config(style="White.TButton")
+        user_input.delete(0, tk.END)
+        play_counter = 1
+        data_key_index = data_keys.index(learn_word)
+        if data_key_index + 1 == len(data_keys):
+            data_key_index = 0
+        else:
+            data_key_index += 1
+            learn_word = data_keys[data_key_index]
+        user_input.delete(0, tk.END)
+        user_input.focus()          
+        return
     learn_word = choice(data_keys)
     data_key_index = data_keys.index(learn_word)
     word.config(text=learn_word)
-    attempt.config(text=user_input.get())
+    attempt.config(text="")
     solution.config(text="")
     play_counter = 0
     user_input.delete(0, tk.END)
+    user_input.focus()
+
+def stop_words():
+    global stop_here, play_counter
+    if not stop_here:
+        stop_here = True
+        stop_btn.config(style="Red.TButton")
+    else:
+        stop_here = False
+        stop_btn.config(style="White.TButton")
+    attempt.config(text="")
+    solution.config(text="")
+    user_input.delete(0, tk.END)
+    user_input.focus()
+
+def open_file():
+    global data_lang, learn_word, data_keys, data_key_index, play_counter
+    opened_file = filedialog.askopenfilename(
+        title="Select a File",
+        filetypes=[("Text files", "*.txt")]
+    )
+    if opened_file:
+        with open(opened_file, 'r') as json_file:
+            data_lang = json.load(json_file)
+            data_keys = list(data_lang.keys())
+            learn_word = choice(data_keys)
+            data_key_index = data_keys.index(learn_word)
+        word.config(text=learn_word)
+        solution.config(text=data_lang[learn_word])
+        attempt.config(text=user_input.get())
+    user_input.delete(0, tk.END)
+    user_input.focus()
 
 root = Tk()
 root.title("Language Learning App")
@@ -68,6 +135,12 @@ style.configure(
     "UserInput.TLabel",
     font=("Arial", 24, "bold"),
     background="#1B4DD6")
+style.configure(
+    "Red.TButton",
+    background="red")
+style.configure(
+    "White.TButton",
+    background="white")
 
 app_img = PhotoImage(
     file=os.path.join(
@@ -105,32 +178,34 @@ mainframe.grid(
     row=0,
     sticky=(NE, SE, SW, NW))
 
-open = ttk.Button(
+open_btn = ttk.Button(
     mainframe,
     image=open_img,
-    padding=(50, 100)
+    padding=(50, 100),
+    command=open_file
     )
-open.grid(column=0, row=0, sticky=NW)
-play = ttk.Button(
+open_btn.grid(column=0, row=0, sticky=NW)
+play_btn = ttk.Button(
     mainframe,
     image=play_img,
     padding=(50, 50),
     command=next_data_key
     )
-play.grid(column=2, row=1, sticky=SE)
-rand = ttk.Button(
+play_btn.grid(column=2, row=1, sticky=SE)
+rand_btn = ttk.Button(
     mainframe,
     image=rand_img,
     padding=(50, 100),
     command=rand_data_key
     )
-rand.grid(column=2, row=0, sticky=NE)
-stop = ttk.Button(
+rand_btn.grid(column=2, row=0, sticky=NE)
+stop_btn = ttk.Button(
     mainframe,
     image=stop_img,
-    padding=(50, 50)
+    padding=(50, 50),
+    command=stop_words
     )
-stop.grid(column=0, row=1, sticky=SW)
+stop_btn.grid(column=0, row=1, sticky=SW)
 
 word = ttk.Label(
         mainframe,

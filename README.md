@@ -30,5 +30,5 @@ TODO
 
 ## Changelog
 
-**[0.0.0] - Sep 10. 2025:**<br />
-_- TODO._<br />
+**[v0.0.1] - Oct 6. 2025:**<br />
+_- Completed application core functions._<br />
