@@ -1,16 +1,19 @@
-###################################################
-#                                                 #
-#              LANGUAGE LEARNING APP              #
-#                                                 #
-###################################################
+
+###############################################################################
+#                                                                             #
+#                          LANGUAGE LEARNING APP 2025                         #
+#                                                                             #
+###############################################################################
+
 
 import os
 import json
 import tkinter as tk
 from random import choice
-from tkinter import Tk, ttk, PhotoImage, N, NE, E, SE, S, SW, W, NW, filedialog
+from tkinter import Tk, ttk, PhotoImage, filedialog, N, NE, E, SE, S, SW, W,\
+    NW, DISABLED, NORMAL
 
-decider = ["UserInput.TLabel", "Solution.TLabel"]
+decider = ["Attempt.TLabel", "Solution.TLabel"]
 data_lang = None
 data_keys = list(data_lang.keys()) if data_lang is not None else None
 learn_word = choice(data_keys) if data_lang is not None else None
@@ -18,23 +21,35 @@ data_key_index = data_keys.index(learn_word) if data_lang is not None else None
 play_counter = 0
 stop_here = False
 
+def stop_clicked():
+    global play_counter, learn_word, data_keys, data_key_index, stop_here,\
+        attempt
+    solution.config(text=data_lang[word.cget("text")])
+    attempt.config(text=user_input.get())
+    if solution.cget("text") == attempt.cget("text"):
+        attempt.config(style=decider[1])
+    else:
+        attempt.config(style=decider[0])
+    stop_here = False
+    stop_btn.config(style="White.TButton")
+    user_input.delete(0, tk.END)
+    play_counter = 1
+    data_key_index = data_keys.index(learn_word)
+    if data_key_index + 1 == len(data_keys):
+        data_key_index = 0
+    else:
+        data_key_index += 1
+    learn_word = data_keys[data_key_index]
+    stop_here = False
+    stop_btn["state"] = NORMAL
+    user_input.delete(0, tk.END)
+    user_input.focus()
+
 def next_data_key():
-    global play_counter, learn_word, data_keys, data_key_index, stop_here
+    global play_counter, learn_word, data_keys, data_key_index, stop_here,\
+        attempt
     if stop_here:
-        solution.config(text=data_lang[word.cget("text")])
-        attempt.config(text=user_input.get())
-        stop_here = False
-        stop_btn.config(style="White.TButton")
-        user_input.delete(0, tk.END)
-        play_counter = 1
-        data_key_index = data_keys.index(learn_word)
-        if data_key_index + 1 == len(data_keys):
-            data_key_index = 0
-        else:
-            data_key_index += 1
-            learn_word = data_keys[data_key_index]
-        user_input.delete(0, tk.END)
-        user_input.focus()
+        stop_clicked()
         return
     if play_counter == 1:
         word.config(text=learn_word)
@@ -50,27 +65,19 @@ def next_data_key():
             data_key_index = 0
         else:
             data_key_index += 1
+    if solution.cget("text") == attempt.cget("text"):
+        attempt.config(style=decider[1])
+    else:
+        attempt.config(style=decider[0])
     learn_word = data_keys[data_key_index]
     user_input.delete(0, tk.END)
     user_input.focus()
 
 def rand_data_key():
-    global play_counter, learn_word, data_keys, data_key_index, stop_here
+    global play_counter, learn_word, data_keys, data_key_index, stop_here,\
+        attempt
     if stop_here:
-        solution.config(text=data_lang[word.cget("text")])
-        attempt.config(text=user_input.get())
-        stop_here = False
-        stop_btn.config(style="White.TButton")
-        user_input.delete(0, tk.END)
-        play_counter = 1
-        data_key_index = data_keys.index(learn_word)
-        if data_key_index + 1 == len(data_keys):
-            data_key_index = 0
-        else:
-            data_key_index += 1
-            learn_word = data_keys[data_key_index]
-        user_input.delete(0, tk.END)
-        user_input.focus()          
+        stop_clicked()
         return
     learn_word = choice(data_keys)
     data_key_index = data_keys.index(learn_word)
@@ -85,10 +92,7 @@ def stop_words():
     global stop_here, play_counter
     if not stop_here:
         stop_here = True
-        stop_btn.config(style="Red.TButton")
-    else:
-        stop_here = False
-        stop_btn.config(style="White.TButton")
+        stop_btn["state"] = DISABLED
     attempt.config(text="")
     solution.config(text="")
     user_input.delete(0, tk.END)
@@ -101,20 +105,24 @@ def open_file():
         filetypes=[("Text files", "*.txt")]
     )
     if opened_file:
-        with open(opened_file, 'r') as json_file:
+        with open(opened_file, 'r', encoding='utf-8') as json_file:
             data_lang = json.load(json_file)
             data_keys = list(data_lang.keys())
             learn_word = choice(data_keys)
             data_key_index = data_keys.index(learn_word)
         word.config(text=learn_word)
-        solution.config(text=data_lang[learn_word])
+        solution.config(text="")
         attempt.config(text=user_input.get())
+        play_btn["state"] = NORMAL
+        rand_btn["state"] = NORMAL
+        stop_btn["state"] = NORMAL
+        root.bind('<Return>', lambda event: next_data_key())
+    play_counter = 0
     user_input.delete(0, tk.END)
     user_input.focus()
 
 root = Tk()
 root.title("Language Learning App")
-root.bind('<Return>', lambda event: next_data_key())
 root.wm_resizable(False, False)
 
 style = ttk.Style()
@@ -132,15 +140,9 @@ style.configure(
     foreground="#00FF00",
     background="#1B4DD6")
 style.configure(
-    "UserInput.TLabel",
+    "Attempt.TLabel",
     font=("Arial", 24, "bold"),
     background="#1B4DD6")
-style.configure(
-    "Red.TButton",
-    background="red")
-style.configure(
-    "White.TButton",
-    background="white")
 
 app_img = PhotoImage(
     file=os.path.join(
@@ -167,8 +169,8 @@ stop_img = PhotoImage(
         os.path.dirname(
             os.path.abspath(__file__)), 'images', 'stop.png')
     )
-
 root.iconphoto(False, app_img)
+
 mainframe = ttk.Frame(
     root,
     padding=(0),
@@ -189,21 +191,24 @@ play_btn = ttk.Button(
     mainframe,
     image=play_img,
     padding=(50, 50),
-    command=next_data_key
+    command=next_data_key,
+    state=DISABLED
     )
 play_btn.grid(column=2, row=1, sticky=SE)
 rand_btn = ttk.Button(
     mainframe,
     image=rand_img,
     padding=(50, 100),
-    command=rand_data_key
+    command=rand_data_key,
+    state=DISABLED
     )
 rand_btn.grid(column=2, row=0, sticky=NE)
 stop_btn = ttk.Button(
     mainframe,
     image=stop_img,
     padding=(50, 50),
-    command=stop_words
+    command=stop_words,
+    state=DISABLED
     )
 stop_btn.grid(column=0, row=1, sticky=SW)
 
@@ -223,8 +228,8 @@ solution = ttk.Label(
 attempt = ttk.Label(
         mainframe,
         text="",
-        style=decider[0],
         padding=(5),
+        style=decider[0],
         width=0
         )
 attempt.grid(column=1, row=1, sticky=(S))
