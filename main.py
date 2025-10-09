@@ -6,241 +6,135 @@
 ###############################################################################
 
 
-import os
 import json
-import tkinter as tk
 from random import choice
-from tkinter import Tk, ttk, PhotoImage, filedialog, N, NE, E, SE, S, SW, W,\
-    NW, DISABLED, NORMAL
+from tkinter import Tk, filedialog, DISABLED, NORMAL, N, NE, E, SE, S, SW, W,\
+    NW
+from utils.constants import COLORS, INTEGERS, STRINGS, STYLES, TYPES
+from utils.helpers import check_attempt, check_data_key_index, clear_input,\
+    create_button, create_entry, create_frame, create_image, create_label,\
+    create_style, list_data_keys, random_data_key, set_config, set_data_key,\
+    set_grid, set_index, stop_released
 
-decider = ["Attempt.TLabel", "Solution.TLabel"]
-data_lang = None
-data_keys = list(data_lang.keys()) if data_lang is not None else None
-learn_word = choice(data_keys) if data_lang is not None else None
-data_key_index = data_keys.index(learn_word) if data_lang is not None else None
-play_counter = 0
-stop_here = False
+# Variables
+data = TYPES["none"]
+data_keys = list(data.keys()) if data is not TYPES["none"] else TYPES["none"]
+data_key = choice(data_keys) if data is not TYPES["none"] else TYPES["none"]
+data_key_index = data_keys.index(data_key) if data is not TYPES["none"] else\
+    TYPES["none"]
+play_counter = INTEGERS["zero"]
+stop_here = TYPES["false"]
 
-def stop_clicked():
-    global play_counter, learn_word, data_keys, data_key_index, stop_here,\
-        attempt
-    solution.config(text=data_lang[word.cget("text")])
-    attempt.config(text=user_input.get())
-    if solution.cget("text") == attempt.cget("text"):
-        attempt.config(style=decider[1])
-    else:
-        attempt.config(style=decider[0])
-    stop_here = False
-    stop_btn.config(style="White.TButton")
-    user_input.delete(0, tk.END)
-    play_counter = 1
-    data_key_index = data_keys.index(learn_word)
-    if data_key_index + 1 == len(data_keys):
-        data_key_index = 0
-    else:
-        data_key_index += 1
-    learn_word = data_keys[data_key_index]
-    stop_here = False
-    stop_btn["state"] = NORMAL
-    user_input.delete(0, tk.END)
-    user_input.focus()
+## Button functions
+def open_file():
+    global data, data_keys, data_key, data_key_index, play_counter
+    opened_file = filedialog.askopenfilename(
+        title=STRINGS["select_file"],
+        filetypes=[("Text files", "*.txt")]
+    )
+    if opened_file:
+        with open(opened_file, STRINGS["read"], encoding=STRINGS["utf_8"])\
+                as json_file:
+            data = json.load(json_file)
+            data_keys = list_data_keys(data)
+            data_key = random_data_key(data_keys)
+            data_key_index = set_index(data_keys, data_key)
+            set_config(word, data_key)
+            play_counter = INTEGERS["zero"]
+            play_btn["state"] = NORMAL
+            rand_btn["state"] = NORMAL
+            stop_btn["state"] = NORMAL
+            set_config(solution, STRINGS["empty_string"])
+            set_config(attempt, STRINGS["empty_string"])
+            root.bind(STRINGS["return"], lambda _: next_word())
+    clear_input(user_input)
+    return
 
-def next_data_key():
-    global play_counter, learn_word, data_keys, data_key_index, stop_here,\
-        attempt
+def next_word():
+    global data_keys, data_key, data_key_index, play_counter, stop_here
     if stop_here:
-        stop_clicked()
+        data_keys, data_key, data_key_index, play_counter, stop_here =\
+            stop_released(data_key, data_keys, solution, attempt, data,\
+                          user_input, word, stop_btn)
         return
-    if play_counter == 1:
-        word.config(text=learn_word)
-        solution.config(text="")
-        attempt.config(text="")
-        play_counter = 0
+    if play_counter == INTEGERS["one"]:
+        set_config(word, data_key)
+        play_counter = INTEGERS["zero"]
+        set_config(solution, STRINGS["empty_string"])
+        set_config(attempt, STRINGS["empty_string"])
     else:
-        solution.config(text=data_lang[learn_word])
-        attempt.config(text=user_input.get())
-        play_counter += 1
-        data_key_index = data_keys.index(learn_word)
-        if data_key_index + 1 == len(data_keys):
-            data_key_index = 0
-        else:
-            data_key_index += 1
-    if solution.cget("text") == attempt.cget("text"):
-        attempt.config(style=decider[1])
-    else:
-        attempt.config(style=decider[0])
-    learn_word = data_keys[data_key_index]
-    user_input.delete(0, tk.END)
-    user_input.focus()
+        set_config(solution, data[data_key])
+        set_config(attempt, user_input.get())
+        play_counter += INTEGERS["one"]
+        data_key_index = set_index(data_keys, data_key)
+        data_key_index = check_data_key_index(data_keys, data_key_index)
+    check_attempt(solution, attempt)
+    data_key = set_data_key(data_keys, data_key_index)
+    clear_input(user_input)
+    return
 
-def rand_data_key():
-    global play_counter, learn_word, data_keys, data_key_index, stop_here,\
-        attempt
+def rand_word():
+    global data_keys, data_key, data_key_index, play_counter, stop_here
     if stop_here:
-        stop_clicked()
+        data_keys, data_key, data_key_index, play_counter, stop_here =\
+            stop_released(data_key, data_keys, solution, attempt, data,\
+                          user_input, word, stop_btn)
         return
-    learn_word = choice(data_keys)
-    data_key_index = data_keys.index(learn_word)
-    word.config(text=learn_word)
-    attempt.config(text="")
-    solution.config(text="")
-    play_counter = 0
-    user_input.delete(0, tk.END)
-    user_input.focus()
+    data_key = random_data_key(data_keys)
+    data_key_index = set_index(data_keys, data_key)
+    set_config(word, data_key)
+    play_counter = INTEGERS["zero"]
+    set_config(solution, STRINGS["empty_string"])
+    set_config(attempt, STRINGS["empty_string"])
+    clear_input(user_input)
+    return
 
 def stop_words():
     global stop_here, play_counter
     if not stop_here:
-        stop_here = True
+        stop_here = TYPES["true"]
         stop_btn["state"] = DISABLED
-    attempt.config(text="")
-    solution.config(text="")
-    user_input.delete(0, tk.END)
-    user_input.focus()
+    set_config(solution, STRINGS["empty_string"])
+    set_config(attempt, STRINGS["empty_string"])
+    clear_input(user_input)
+    return
 
-def open_file():
-    global data_lang, learn_word, data_keys, data_key_index, play_counter
-    opened_file = filedialog.askopenfilename(
-        title="Select a File",
-        filetypes=[("Text files", "*.txt")]
-    )
-    if opened_file:
-        with open(opened_file, 'r', encoding='utf-8') as json_file:
-            data_lang = json.load(json_file)
-            data_keys = list(data_lang.keys())
-            learn_word = choice(data_keys)
-            data_key_index = data_keys.index(learn_word)
-        word.config(text=learn_word)
-        solution.config(text="")
-        attempt.config(text=user_input.get())
-        play_btn["state"] = NORMAL
-        rand_btn["state"] = NORMAL
-        stop_btn["state"] = NORMAL
-        root.bind('<Return>', lambda event: next_data_key())
-    play_counter = 0
-    user_input.delete(0, tk.END)
-    user_input.focus()
-
+# Setup
 root = Tk()
 root.title("Language Learning App")
-root.wm_resizable(False, False)
-
-style = ttk.Style()
-style.configure(
-    "MainFrame.TFrame",
-    background="#1B4DD6")
-style.configure(
-    "Word.TLabel",
-    font=("Arial", 24, "bold"),
-    foreground="white",
-    background="#1B4DD6")
-style.configure(
-    "Solution.TLabel",
-    font=("Arial", 24, "bold"),
-    foreground="#00FF00",
-    background="#1B4DD6")
-style.configure(
-    "Attempt.TLabel",
-    font=("Arial", 24, "bold"),
-    background="#1B4DD6")
-
-app_img = PhotoImage(
-    file=os.path.join(
-        os.path.dirname(
-            os.path.abspath(__file__)), 'images', 'll_app.ico')
-    )
-open_img = PhotoImage(
-    file=os.path.join(
-        os.path.dirname(
-            os.path.abspath(__file__)), 'images', 'open.png')
-    )
-play_img = PhotoImage(
-    file=os.path.join(
-        os.path.dirname(
-            os.path.abspath(__file__)), 'images', 'play.png')
-    )
-rand_img = PhotoImage(
-    file=os.path.join(
-        os.path.dirname(
-            os.path.abspath(__file__)), 'images', 'rand.png')
-    )
-stop_img = PhotoImage(
-    file=os.path.join(
-        os.path.dirname(
-            os.path.abspath(__file__)), 'images', 'stop.png')
-    )
-root.iconphoto(False, app_img)
-
-mainframe = ttk.Frame(
-    root,
-    padding=(0),
-    style="MainFrame.TFrame")
-mainframe.grid(
-    column=0,
-    row=0,
-    sticky=(NE, SE, SW, NW))
-
-open_btn = ttk.Button(
-    mainframe,
-    image=open_img,
-    padding=(50, 100),
-    command=open_file
-    )
-open_btn.grid(column=0, row=0, sticky=NW)
-play_btn = ttk.Button(
-    mainframe,
-    image=play_img,
-    padding=(50, 50),
-    command=next_data_key,
-    state=DISABLED
-    )
-play_btn.grid(column=2, row=1, sticky=SE)
-rand_btn = ttk.Button(
-    mainframe,
-    image=rand_img,
-    padding=(50, 100),
-    command=rand_data_key,
-    state=DISABLED
-    )
-rand_btn.grid(column=2, row=0, sticky=NE)
-stop_btn = ttk.Button(
-    mainframe,
-    image=stop_img,
-    padding=(50, 50),
-    command=stop_words,
-    state=DISABLED
-    )
-stop_btn.grid(column=0, row=1, sticky=SW)
-
-word = ttk.Label(
-        mainframe,
-        text=learn_word,
-        style="Word.TLabel",
-        width=0
-        )
-word.grid(column=1, row=0, sticky=N)
-solution = ttk.Label(
-        mainframe,
-        text="",
-        style="Solution.TLabel",
-        width=0
-        )
-attempt = ttk.Label(
-        mainframe,
-        text="",
-        padding=(5),
-        style=decider[0],
-        width=0
-        )
-attempt.grid(column=1, row=1, sticky=(S))
-
-solution.grid(column=1, row=0, sticky=(S))
-user_input = ttk.Entry(
-        mainframe,
-        font=("Arial", 24, "bold"),
-        justify="center"
-        )
-user_input.grid(column=1, row=1, sticky=(E, W))
-user_input.focus()
+root.wm_resizable(TYPES["false"], TYPES["false"])
+style = create_style(STYLES["mainframe"])
+style = create_style(STYLES["word"], COLORS["white"])
+style = create_style(STYLES["correct"], COLORS["green"])
+style = create_style(STYLES["incorrect"])
+mainframe = create_frame(root)
+user_input = create_entry(mainframe)
+app_img = create_image('app.ico')
+open_img = create_image('open.png')
+play_img = create_image('play.png')
+rand_img = create_image('rand.png')
+stop_img = create_image('stop.png')
+root.iconphoto(TYPES["false"], app_img)
+word = create_label(mainframe, data_key, STYLES["word"])
+solution = create_label(mainframe, STRINGS["empty_string"], STYLES["correct"])
+attempt = create_label(mainframe, STRINGS["empty_string"],\
+            STYLES["incorrect"], INTEGERS["five"])
+open_btn = create_button(mainframe, open_img, (INTEGERS["fifty"],\
+    INTEGERS["one_hundred"]), open_file)
+play_btn = create_button(mainframe, play_img, (INTEGERS["fifty"],\
+    INTEGERS["fifty"]), next_word, DISABLED)
+rand_btn = create_button(mainframe, rand_img, (INTEGERS["fifty"],\
+    INTEGERS["one_hundred"]), rand_word, DISABLED)
+stop_btn = create_button(mainframe, stop_img, (INTEGERS["fifty"],\
+    INTEGERS["fifty"]), stop_words, DISABLED)
+set_grid(mainframe, INTEGERS["zero"], INTEGERS["zero"], (NE, SE, SW, NW))
+set_grid(user_input, INTEGERS["one"], INTEGERS["one"], (E, W))
+set_grid(word, INTEGERS["one"], INTEGERS["zero"], N)
+set_grid(solution, INTEGERS["one"], INTEGERS["zero"], S)
+set_grid(attempt, INTEGERS["one"], INTEGERS["one"], S)
+set_grid(open_btn, INTEGERS["zero"], INTEGERS["zero"], NW)
+set_grid(play_btn, INTEGERS["two"], INTEGERS["one"], SE)
+set_grid(rand_btn, INTEGERS["two"], INTEGERS["zero"], NE)
+set_grid(stop_btn, INTEGERS["zero"], INTEGERS["one"], SW)
 
 root.mainloop()

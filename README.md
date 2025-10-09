@@ -12,7 +12,7 @@ You can use the app to learn foreign words.<br />
 ## Background
 
 Program is developed with VSCode and written in Python.<br />
-Install VSCode, python 3 and required libraries.<br />
+Install VSCode, Python 3.13.5 and required libraries.<br />
 Run main.py in the root folder to start the program.<br />
 
 ## Instructions
@@ -20,68 +20,44 @@ Run main.py in the root folder to start the program.<br />
 Start by selecting a language file using the Eject Button (Top Left).<br />
 
 Word (Top Center):<br />
-<blockquote>
-    - Shows word from the language file dictionary.<br />
-</blockquote>
+Shows word from the language file dictionary.<br />
 
 User Input Field (Bottom Center):<br />
-<blockquote>
-    - Here you can type the translation of the Word.<br />
-</blockquote>
+Here you can type the translation of the Word.<br />
 
 Eject Button (Top Left):<br />
-<blockquote>
-    - Opens a language file of JSON type.<br />
-</blockquote>
+Opens a language file of JSON type.<br />
 
 Play Button (Bottom Right):<br />
-<blockquote>
-    - Shows next word.<br />
-</blockquote>
+Shows next word.<br />
 
 Random Button (Top Right):<br />
-<blockquote>
-    - Shows random word.<br />
-</blockquote>
+Shows random word.<br />
 
 Stop Button (Bottom Left):<br />
-<blockquote>
-    - Holds current word.<br />
-</blockquote>
+Holds current word.<br />
 
 ## Ohjeet
 
 Aloita avaamalla kielitiedosto Avaa-painikkeella (Ylhäällä vasemmalla).<br />
 
 Sana (Ylhäällä keskellä):<br />
-<blockquote>
-    - Näyttää sanan kielitiedoston sisältämästä sanakirjasta.<br />
-</blockquote>
+Näyttää sanan kielitiedoston sisältämästä sanakirjasta.<br />
 
 Syötekenttä (Alhaalla keskellä):<br />
-<blockquote>
-    - Tänne voit kirjoittaa käännöksen.<br />
-</blockquote>
+Tänne voit kirjoittaa käännöksen.<br />
 
 Avaa-painike (Ylhäällä vasemmalla):<br />
-<blockquote>
-    - Avaa JSON-tyyppisen kielitiedoston.<br />
-</blockquote>
+Avaa JSON-tyyppisen kielitiedoston.<br />
 
 Seuraava-painike (Alhaalla oikealla):<br />
-<blockquote>
-    - Näyttää seuraavan sanan.<br />
-</blockquote>
+Näyttää seuraavan sanan.<br />
 
 Satunnainen-painike (Ylhäällä oikealla):<br />
-<blockquote>
-    - Näyttää satunnaisen sanan.<br />
-</blockquote>
+Näyttää satunnaisen sanan.<br />
 
 Pysäytä-painike (Alhaalla vasemmalla):<br />
-<blockquote>
-    - Pysyy kyseisessä sanassa.<br />
-</blockquote>
+Pysyy kyseisessä sanassa.<br />
 
 ## N.B.
 
