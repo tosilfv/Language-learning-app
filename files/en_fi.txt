@@ -1,7 +1,7 @@
 {
     "hello": "hei",
     "world": "maailma",
-    "how": "kuinka",
+    "how": "miten",
     "is": "on",
     "it": "se",
     "going": "menee"

@@ -2,7 +2,7 @@
 
 ## Video
 
-TODO
+![Video](video_3.gif)
 
 ## Description
 
@@ -13,11 +13,12 @@ You can use the app to learn foreign words.<br />
 
 Program is developed with VSCode and written in Python.<br />
 Install VSCode, Python 3.13.5 and required libraries.<br />
-Run main.py in the root folder to start the program.<br />
+Run main.py from the root folder to start the program.<br />
 
 ## Instructions
 
-Start by selecting a language file using the Eject Button (Top Left).<br />
+Start by selecting a JSON file using the Eject Button (Top Left).<br />
+A starting file is included in the files folder.<br />
 
 Word (Top Center):<br />
 Shows word from the language file dictionary.<br />
@@ -63,16 +64,22 @@ Pysyy kyseisessä sanassa.<br />
 
 The language file should be a JSON dictionary of *.txt type.<br />
 Enter key press will activate Play button.<br />
-Stop button will turn to DISABLED after activation and to NORMAL after<br />
-Play or Random button activation.<br />
+Stop button will turn to DISABLED after click and to NORMAL after<br />
+Eject, Play or Random button click.<br />
 Do not leave a trailing comma to the last key value pair of the language<br />
 file, as this would not be valid JSON.<br />
 
 ## Testing
 
-TODO
+You can run [mypy](https://www.mypy-lang.org/) type check tests from<br />
+root folder in the terminal with:<br />
+mypy .\main.py<br />
+mypy .\utils\helpers.py <br />
 
 ## Changelog
 
 **[v0.0.1] - Oct 6. 2025:**<br />
 _- Completed application core functions._<br />
+
+**[v1.0.0] - Oct 10. 2025:**<br />
+_- Initial release._<br />
